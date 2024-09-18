@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from openai import OpenAI
 
-client = OpenAI(api_key='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')
+client = OpenAI(api_key='API KEY')
 from dotenv import load_dotenv
 
 # Initialize Flask app
