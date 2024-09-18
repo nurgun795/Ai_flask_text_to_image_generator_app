@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Image Generator</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-top: 20px;
+        }
+        #loading {
+            display: none;
+            font-size: 16px;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Text-to-Image Generator</h1>
+    <div>
+        <label for="prompt">Enter your description:</label>
+        <input type="text" id="prompt" name="prompt">
+        <button onclick="generateImage()">Generate Image</button>
+    </div>
+    <div id="loading">Generating image, please wait...</div>
+    <div id="image-container"></div>
+
+    <script>
+        async function generateImage() {
+            const prompt = document.getElementById('prompt').value;
+            const responseDiv = document.getElementById('image-container');
+            const loadingDiv = document.getElementById('loading');
+            
+            // Show loading message
+            loadingDiv.style.display = 'block';
+            responseDiv.innerHTML = '';
+
+            try {
+                const response = await fetch('/generate_image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                if (data.image_url) {
+                    const img = document.createElement('img');
+                    img.src = data.image_url;
+                    responseDiv.appendChild(img);
+                } else {
+                    responseDiv.innerHTML = '<p>Error: Image URL not found in response.</p>';
+                }
+            } catch (error) {
+                responseDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+            } finally {
+                // Hide loading message
+                loadingDiv.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
